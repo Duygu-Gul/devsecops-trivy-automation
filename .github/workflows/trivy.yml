@@ -1,0 +1,30 @@
+name: DevSecOps Trivy Security Scan
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-scan:
+    name: Build & Security Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repoyu Klonla
+        uses: actions/checkout@v4
+
+      - name: Docker Imajını Derle
+        run: |
+          docker build -t zafiyetli-app:latest ./app
+
+      - name: Trivy ile Guvenlik Taramasi Yap
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'zafiyetli-app:latest'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
